@@ -15,51 +15,57 @@ import {DeployFundMe} from "../../script/DeployFundMe.s.sol";
 **/
 
 contract FundMeTest is Test {
-    // uint256 number = 1;
     FundMe fundMe;
 
     address USER = makeAddr("USER");
-    uint256 constant SEND_VALUE = 0.1 ether; // 100000000000000000 or 10^17
-    uint256 constant STARTING_BALANCE = 10 ether; // 10000000000000000000 or 10^19
+    uint256 constant SEND_VALUE = 0.1 ether;
+    uint256 constant STARTING_BALANCE = 10 ether;
     uint256 constant GAS_PRICE = 1;
 
+    // Entry point, run before each test
     function setUp() external {
         // setup state
-        // number = 2;
-        // fundMe = new FundMe(0x694AA1769357215DE4FAC081bf1f309aDC325306);
+        // 1. fundMe = new FundMe(0x694AA1769357215DE4FAC081bf1f309aDC325306);
+        // there : test contract deploy FundMe and so it's the owner
+        // 2. Using DeployFundMe script to deploy FundMe contract
+        // In the script the defUser is the sender
         DeployFundMe deployFundMe = new DeployFundMe();
         fundMe = deployFundMe.run();
+        console.log(
+            "HERHEHEHEHEHHEEHHEHE FundMe owner address: %s",
+            fundMe.getOwner()
+        );
         vm.deal(USER, STARTING_BALANCE);
     }
 
-    function testFundMe() public {
-        // console.log(number);
-        // console.log("%s:%s", "number", number);
-        // test
-        // assertEq(number, 2);
+    // regular test : prefix with test
+    function test_MinimumDollarIsFive() public {
+        assertEq(fundMe.MINIMUM_USD(), 5 * 10 ** 18);
     }
 
-    function testMinimumDollarIsFive() public {
-        assertEq(fundMe.MINIMUM_USD(), 5 * 10 ** 18); // 5 * 10^18 or 5e18
-    }
-
-    function testOwnerIsMsgSender() public {
+    function test_OwnerIsMsgSender() public {
         // assertEq(fundMe.i_owner(), address(this));
-        //after refactoring : fundMe created by DeployFundMe script and caller is msg.sender
+        // after refactoring : fundMe created by DeployFundMe script and caller is msg.sender
         assertEq(fundMe.getOwner(), msg.sender);
     }
 
-    function testPriceFeedVersionIsAccurate() public {
+    function test_PriceFeedVersionIsAccurate() public {
         assertEq(fundMe.getVersion(), 4);
     }
 
-    function testFundFailsWithoutEnoughEth() public {
+    function test_FundFailsWithoutEnoughEth() public {
         vm.expectRevert();
 
         fundMe.fund();
     }
 
-    function testFundUpdatesFundedDataStructure() public {
+    // failing test version : prefix with testFail
+    function testFail_FundFailsWithoutEnoughEth() public {
+        // vm.expectRevert();
+        fundMe.fund();
+    }
+
+    function test_FundUpdatesFundedDataStructure() public {
         vm.prank(USER);
         fundMe.fund{value: SEND_VALUE}();
 
@@ -67,7 +73,7 @@ contract FundMeTest is Test {
         assertEq(amountFunded, SEND_VALUE);
     }
 
-    function testAddsFunderToArrayFunders() public {
+    function test_AddsFunderToArrayFunders() public {
         vm.prank(USER);
         fundMe.fund{value: SEND_VALUE}();
 
@@ -75,6 +81,7 @@ contract FundMeTest is Test {
         assertEq(funder, USER);
     }
 
+    // Branch tree testing (modifiers used to test different branches)
     modifier funded() {
         vm.prank(USER);
         fundMe.fund{value: SEND_VALUE}();
@@ -88,13 +95,13 @@ contract FundMeTest is Test {
     //     vm.prank(USER);
     //     fundMe.withdraw();
     // }
-    function testOnlyOwnerCanWithdraw() public funded {
+    function test_OnlyOwnerCanWithdraw() public funded {
         vm.prank(USER);
         vm.expectRevert();
         fundMe.withdraw();
     }
 
-    function testWithdrawWithASingleFunder() public funded {
+    function test_WithdrawWithASingleFunder() public funded {
         // Arrange
         uint256 startingOwnerBalance = fundMe.getOwner().balance;
         uint256 startingFundMeBalance = address(fundMe).balance;
@@ -120,10 +127,10 @@ contract FundMeTest is Test {
         );
     }
 
-    function testWithdrawFromMultipleFunders() public funded {
+    function test_WithdrawFromMultipleFunders() public funded {
         // Arrange
         uint160 numberOfFunders = 10;
-        uint160 startingFunderIndex = 1; // to know send to 0 address (in case of sanity checks...)
+        uint160 startingFunderIndex = 1; // to not send to 0 address (in case of sanity checks...)
 
         for (uint160 i = startingFunderIndex; i < numberOfFunders; i++) {
             hoax(address(i), SEND_VALUE);
@@ -149,10 +156,10 @@ contract FundMeTest is Test {
         );
     }
 
-    function testWithdrawFromMultipleFundersCheaper() public funded {
+    function test_WithdrawFromMultipleFundersCheaper() public funded {
         // Arrange
         uint160 numberOfFunders = 10;
-        uint160 startingFunderIndex = 1; // to know send to 0 address (in case of sanity checks...)
+        uint160 startingFunderIndex = 1; // to not send to 0 address (in case of sanity checks...)
 
         for (uint160 i = startingFunderIndex; i < numberOfFunders; i++) {
             hoax(address(i), SEND_VALUE);

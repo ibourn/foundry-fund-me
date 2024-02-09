@@ -4,8 +4,10 @@ out = "out"
 libs = ["lib"]
 remappings = ["@chainlink/contracts/=lib/chainlink-brownie-contracts/contracts/"]
 gas_reports = ["*"]
+# gas_reports = ["FundeMe", "PriceConverter"]
 # ffi=true
 fs_permissions = [{ access = "read", path = "./broadcast" }]
+# sender = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
 
 
 
