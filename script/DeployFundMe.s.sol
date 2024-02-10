@@ -19,7 +19,7 @@ contract DeployFundMe is Script {
         vm.startBroadcast();
         fundMe = new FundMe(ethusdPriceFeed);
         vm.stopBroadcast();
-        // console.log("FundMe owner address: %s", fundMe.getOwner());
+        // console.log("DeployFundMe / FundMe owner : %s", fundMe.getOwner());
         return fundMe;
     }
 }

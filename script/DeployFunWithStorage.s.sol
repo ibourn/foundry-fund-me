@@ -32,17 +32,11 @@ contract DeployFunWithStorage is Script {
         console.logBytes32(value);
     }
 
-    // Option 1
     /*
-     * cast storage ADDRESS
-     */
-
-    // Option 2
-    // cast k 0x0000000000000000000000000000000000000000000000000000000000000002
-    // cast storage ADDRESS <OUTPUT_OF_ABOVE>
-
-    // Option 3:
-    /*
+     * cast storage ADDRESS SLOT_INDEX
+     *
+     * or
+     *
      * curl -X POST -H "Content-Type: application/json" --data '{"jsonrpc":"2.0","method":"debug_traceTransaction","params":["0xe98bc0fd715a075b83acbbfd72b4df8bb62633daf1768e9823896bfae4758906"],"id":1}' http://127.0.0.1:8545 > debug_tx.json
      * Go through the JSON and find the storage slot you want
      */

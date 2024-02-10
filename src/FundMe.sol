@@ -54,7 +54,7 @@ contract FundMe {
     // }
 
     /****************************************************************
-     * Fund / Withdraw functions
+     * Fund / Withdraw Logic
      ***************************************************************/
     function fund() public payable {
         require(

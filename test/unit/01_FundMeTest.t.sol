@@ -28,13 +28,14 @@ contract FundMeTest is Test {
         // 1. fundMe = new FundMe(0x694AA1769357215DE4FAC081bf1f309aDC325306);
         // there : test contract deploy FundMe and so it's the owner
         // 2. Using DeployFundMe script to deploy FundMe contract
-        // In the script the defUser is the sender
+        // In the script the defUser is the sender,
+        // so we return a FundMe instance with defUser as owner
         DeployFundMe deployFundMe = new DeployFundMe();
         fundMe = deployFundMe.run();
-        console.log(
-            "HERHEHEHEHEHHEEHHEHE FundMe owner address: %s",
-            fundMe.getOwner()
-        );
+        // console.log(
+        //     "01_FundeMeTest:SetUp / FundMe owner: %s",
+        //     fundMe.getOwner()
+        // );
         vm.deal(USER, STARTING_BALANCE);
     }
 
@@ -107,15 +108,22 @@ contract FundMeTest is Test {
         uint256 startingFundMeBalance = address(fundMe).balance;
 
         // Act
+        // Default gas price is 0 so we set it to 1 to have the gas used
         uint256 gasStart = gasleft();
         vm.txGasPrice(GAS_PRICE);
         vm.prank(fundMe.getOwner());
 
         fundMe.withdraw();
+
         uint256 gasEnd = gasleft();
         uint256 gasUsed = (gasStart - gasEnd) * tx.gasprice;
-        console.log("Gas used: %s", gasUsed);
-
+        console.log(
+            "01_FundeMeTest:WithrdrawWithASingleUser /\n"
+            "gasStart: %s\ngasEnd : %s\ngasUsed: %s",
+            gasStart,
+            gasEnd,
+            gasUsed
+        );
         // Assert
         uint256 endingOwnerBalance = fundMe.getOwner().balance;
         uint256 endingFundMeBalance = address(fundMe).balance;

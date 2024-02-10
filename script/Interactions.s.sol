@@ -9,42 +9,28 @@ import {FundMe} from "../src/FundMe.sol";
 contract FundFundMe is Script {
     uint256 constant SEND_VALUE = 0.1 ether;
 
-    // function fundFundMe(address mostRecentDeployed) public {
-    //     console.log("FundFundMe / msg.sender: %s", msg.sender);
-    //     console.log(
-    //         "FundFundeMe / sender balance: %s",
-    //         address(msg.sender).balance
-    //     );
-    //     vm.startBroadcast();
-    //     FundMe(payable(mostRecentDeployed)).fund{value: SEND_VALUE}();
-    //     vm.stopBroadcast();
-    //     console.log("Funded FundMe contract with %s", SEND_VALUE);
-    // }
-
     function fundFundMe(address mostRecentDeployed) public {
-        address USER = makeAddr("USER");
-        console.log("FundFundMe / msg.sender: %s", msg.sender);
         console.log(
-            "FundFundeMe / sender balance: %s",
-            address(msg.sender).balance
-        );
-        vm.startBroadcast();
-        // vm.startBroadcast(address(USER));
-        console.log(
-            "FundMe balance Before interaction %s",
+            "Interactions:FundFundMe / fundMe balance before interaction: %s",
             address(mostRecentDeployed).balance
         );
-        console.log("FundFundMe / origin address: %s", tx.origin);
-        console.log("FundFundMe / 2nd msg.sender: %s", msg.sender);
+        console.log("Interactions:FundFundMe / msg.sender: %s", msg.sender);
+        console.log("Interactions:FundFundMe / origin address: %s", tx.origin);
+        // = defUSER : 0x1804c8AB1F12E6bbf3894d4083f33e07309d1f38
+
+        vm.startBroadcast();
         FundMe(payable(mostRecentDeployed)).fund{value: SEND_VALUE}();
         vm.stopBroadcast();
-        console.log("Funded FundMe contract with %s", SEND_VALUE);
-        console.log("FundMe address: %s", mostRecentDeployed);
-        console.log("FundMe balance: %s", address(mostRecentDeployed).balance);
+
         console.log(
-            "FundFundeMe / sender balance: %s",
-            address(msg.sender).balance
+            "Interactions:FundFundMe / fundMe owner: %s",
+            FundMe(mostRecentDeployed).getOwner()
         );
+        console.log(
+            "Interactions:FundFundMe / fundMe balance: %s",
+            address(mostRecentDeployed).balance
+        );
+        console.log("Interactions:FundFundMe / amount sent : %s", SEND_VALUE);
     }
 
     function run() external {
@@ -52,21 +38,23 @@ contract FundFundMe is Script {
             "FundMe",
             block.chainid
         );
-        // vm.startBroadcast();
         fundFundMe(mostRecentlyDeployed);
-        // vm.stopBroadcast();
     }
 }
 
 contract WithdrawFundMe is Script {
-    uint256 constant SEND_VALUE = 0.1 ether;
-
     function withdrawFundMe(address mostRecentDeployed) public {
+        console.log(
+            "Interactions:WithdrawFundMe / fundMe balance: %s",
+            address(mostRecentDeployed).balance
+        );
+
         vm.startBroadcast();
         FundMe(payable(mostRecentDeployed)).withdraw();
         vm.stopBroadcast();
+
         console.log(
-            "FundMe owner address: %s",
+            "Interactions:WithdrawFundMe /FundMe owner address: %s",
             FundMe(payable(mostRecentDeployed)).getOwner()
         );
     }
