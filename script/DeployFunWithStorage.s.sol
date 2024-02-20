@@ -9,6 +9,7 @@ contract DeployFunWithStorage is Script {
         vm.startBroadcast();
         FunWithStorage funWithStorage = new FunWithStorage();
         vm.stopBroadcast();
+        
         printStorageData(address(funWithStorage));
         printFirstArrayElement(address(funWithStorage));
         return (funWithStorage);
